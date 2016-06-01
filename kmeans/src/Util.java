@@ -20,4 +20,5 @@ public class Util {
 	final static int getB(int rgb){
 		  return  checkPixelBounds(rgb & 0x000000ff);
 	}
+
 }
