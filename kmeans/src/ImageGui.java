@@ -42,8 +42,8 @@ public class ImageGui  extends JFrame {
 	    setTitle("K-means application to colored image's dithering");
 		
 		try {
-			//img = ImageIO.read(new File("image/Munich.png"));
-			img = ImageIO.read(new File("image/F16.png"));
+			img = ImageIO.read(new File("image/Munich.png"));
+			//img = ImageIO.read(new File("image/F16.png"));
 		} catch (IOException e) {
 			System.out.println("IO exception");
 		}
@@ -98,7 +98,7 @@ public class ImageGui  extends JFrame {
 	    btnDither.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent arg0) {
 				Graphics g = imagePanel2.getGraphics();
-				imagePanel2.paintComponent(g, data);
+				imagePanel2.paintComponent(g, KMeans.getInstance().process(data, slider.getValue()));
 			}
 	    });   
 	 }
