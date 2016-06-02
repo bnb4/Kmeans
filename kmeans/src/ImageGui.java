@@ -1,3 +1,4 @@
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -11,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
@@ -25,6 +27,7 @@ public class ImageGui  extends JFrame {
 
 	JButton btnShow = new JButton("顯示");
 	JButton btnDither = new JButton("降色");
+	JTextField kTextField = new JTextField("64", 6);
 	
 	JSlider slider;
 	JLabel lbLess = new JLabel("   Iteration:  (1000)");
@@ -60,19 +63,23 @@ public class ImageGui  extends JFrame {
 	    		data[y][x][2] = Util.getB(rgb);
 	    	}
 	    }
-
+		
 		cotrolPanelMain = new JPanel();
 		cotrolPanelMain.setLayout(new GridLayout(6,1));
+		cotrolPanelShow.add(kTextField);
 		cotrolPanelShow.add(btnShow);
 		cotrolPanelShow.add(btnDither);
 		cotrolPanelShow.add(lbLess);
-		slider = new JSlider(0, 10000,5000);
+		cotrolPanelMain.setOpaque(false); // fix: 背景設為透明
+		
+		slider = new JSlider(0, 200, 0);
 		iteration = slider.getValue();
 		cotrolPanelShow.add(slider);
 		cotrolPanelShow.add(lbMore);
 		cotrolPanelMain.add(cotrolPanelShow);
 		cotrolPanelMain.setBounds(0, 0,1200,200);
 		getContentPane().add(cotrolPanelMain);
+		
 	    imagePanel = new ImagePanel();
 	    imagePanel.setBounds(20,50, 620,450);
 	    getContentPane().add(imagePanel);
@@ -92,13 +99,15 @@ public class ImageGui  extends JFrame {
 			public void stateChanged(ChangeEvent arg0) {
 				iteration = slider.getValue();
 				System.out.println("iteration = " + iteration);
-				
-			}});
+			}
+		});
 	  
 	    btnDither.addActionListener(new ActionListener(){ 
 			public void actionPerformed(ActionEvent arg0) {
 				Graphics g = imagePanel2.getGraphics();
-				imagePanel2.paintComponent(g, KMeans.getInstance().process(data, slider.getValue()));
+				int k = Integer.parseInt(kTextField.getText());
+	    		if (k > 0)
+	    			imagePanel2.paintComponent(g, KMeans.getInstance().process(data, slider.getValue(), k));
 			}
 	    });   
 	 }
