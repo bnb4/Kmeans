@@ -18,6 +18,8 @@ public class KMeans {
 	 */
 	public int [][][] process(int [][][] rdata, int max, int k) {
 		
+		System.out.println("Start: " + Calendar.getInstance().getTime());
+		
 		// 設定要跑的 k數量
 		this.K = k;
 		
@@ -41,6 +43,8 @@ public class KMeans {
 			
 			groups = nextGroups;
 		}
+		
+		System.out.println("Finish: " + Calendar.getInstance().getTime());
 		
 		// 取得最後分群的最終顏色
 		int [][] colors = getClusterCenter(groups);
