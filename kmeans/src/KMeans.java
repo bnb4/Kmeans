@@ -5,6 +5,7 @@ public class KMeans {
 	// Singleton pettern
 	private static final KMeans kmeans = new KMeans();
 	public static final KMeans getInstance() {return kmeans;}
+	private static int[][] finalColors= null;
 	
 	// 設定預設的分群數量
 	private int K = 64;
@@ -43,13 +44,13 @@ public class KMeans {
 		
 		// 取得最後分群的最終顏色
 		int [][] colors = getClusterCenter(groups);
+		finalColors = colors;
 		
 		// 將顏色結果對應，方便後面處理圖像
 		Map<int[], int[]> mapColor = new HashMap<>();
-		for (int group_idx = 0; group_idx < K; group_idx++) {
+		for (int group_idx = 0; group_idx < K; group_idx++)
 			for (int [] color : groups[group_idx])
 				mapColor.put(color, colors[group_idx]);
-		}
 			
 		// 處理圖像成對應的顏色
 		for (int h = 0; h < data.length; h++)
@@ -125,8 +126,7 @@ public class KMeans {
 	 * @param data 前一輪分群 [群集][屬於該群的每個顏色][RGB]
 	 * @return 下一輪分群 [群集][屬於該群的每個顏色][RGB]
 	 */
-	private int [][][] getNextGroup(int [][][] data) {
-		
+	private int [][][] getNextGroup(int [][][] data) {	
 		if (data == null) return null;	
 		int [][] colors = getClusterCenter(data);
 		
@@ -146,8 +146,7 @@ public class KMeans {
 	 * @param data 整張圖 [Height][Wigth][RGB]
 	 * @return 第一輪分群 [群集][屬於該群的每個顏色][RGB]
 	 */
-	private int [][][] getFirstGroup(int [][][] data) {
-		
+	private int [][][] getFirstGroup(int [][][] data) {	
 		if (data == null) return null;
 		int [][] colors = getInitialColors(data);
 		
@@ -160,8 +159,7 @@ public class KMeans {
 	 * @param center 新的中心點
 	 * @return 下一輪分群
 	 */
-	private int [][][] getGroup(int [][][] data, int [][] center) {
-		
+	private int [][][] getGroup(int [][][] data, int [][] center) {	
 		// 儲存結構
 		int [][][] nextGroup = new int[K][][];
 		List<List<int[]>> temp = new ArrayList<>(K);
@@ -197,4 +195,7 @@ public class KMeans {
 		return nextGroup;
 	}
 	
+	public int[][] getFinalColors() {
+		return finalColors;
+	}
 }

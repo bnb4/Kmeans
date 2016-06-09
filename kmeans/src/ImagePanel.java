@@ -1,9 +1,11 @@
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
 public class ImagePanel extends JPanel {
+	
 	private static final long serialVersionUID = 3503354214955001924L;
 
 	private int [][][] data;
@@ -36,7 +38,7 @@ public class ImagePanel extends JPanel {
 		for (int y = 0; y < data.length; y++)
 	    	for (int x = 0; x < data[y].length; x++)
 	    		outImage[y * width + x] = 
-	    			(data[y][x][0]<<16)+(data[y][x][1]<<8)+(data[y][x][2]);
+	    			(data[y][x][0]<<16) + (data[y][x][1]<<8) + (data[y][x][2]);
 		
 		imageOut.setRGB(0, 0, width, height, outImage, 0, width);
 		g.drawImage(imageOut, 0, 0, null);
@@ -51,4 +53,8 @@ public class ImagePanel extends JPanel {
 	    	} 
 	  	}*/
 	} 
+	
+	public Color getColorByPoint(int x, int y) {
+		return new Color(data[y][x][0], data[y][x][1], data[y][x][2]);
+	}
 }

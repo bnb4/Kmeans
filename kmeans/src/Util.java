@@ -1,8 +1,8 @@
 public class Util {
 	
 	final static int checkPixelBounds(int value){
-		if (value >255) return 255;
-		if (value <0) return 0;
+		if (value > 255) return 255;
+		if (value < 0) return 0;
 		return value;
  	} 
 	
