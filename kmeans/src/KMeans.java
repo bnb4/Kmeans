@@ -5,7 +5,11 @@ public class KMeans {
 	// Singleton pettern
 	private static final KMeans kmeans = new KMeans();
 	public static final KMeans getInstance() {return kmeans;}
-	private static int[][] finalColors= null;
+	private static int[][] finalColors = null;
+	
+	private double boxSideLength;
+	private Map<String, ArrayList<int[]>> boxsData;
+	private Map<String, ArrayList<int[]>> boxsCenter;
 	
 	// 設定預設的分群數量
 	private int K = 64;
@@ -25,6 +29,24 @@ public class KMeans {
 		
 		// 複製陣列來執行 (防止串改到原始資料 陣列資料為  Call by reference.)
 		int [][][] data = Util.clone(rdata);
+		
+		// 分格子
+		int boxSideNum = (int)(Math.pow(K, 1/3));
+		boxSideLength = 256 / boxSideNum;
+		boxsData = new HashMap<>();
+		
+		for(int h = 0; h < data.length; h++) {
+			for(int w = 0; w < data[h].length; w++) {
+				String rString = (int)(data[h][w][0] / boxSideLength) + "";
+				String gString = (int)(data[h][w][1] / boxSideLength) + "";
+				String bString = (int)(data[h][w][2] / boxSideLength) + "";
+				String key = rString + gString + bString;
+				if (!boxsData.containsKey(key)) {
+					boxsData.put(key, new ArrayList<int[]>());
+				}
+				boxsData.get(key).add(data[h][w]);
+			}
+		}
 		
 		// 取得初始分群
 		System.out.println("Begin process for " + max + " iterations.");
@@ -87,6 +109,15 @@ public class KMeans {
 			int random_h = (int) (Math.random() * height);
 			int random_w = (int) (Math.random() * width);
 			colors.add(data[random_h][random_w]);
+			
+			String rString = (int)(data[random_h][random_w][0] / boxSideLength) + "";
+			String gString = (int)(data[random_h][random_w][1] / boxSideLength) + "";
+			String bString = (int)(data[random_h][random_w][2] / boxSideLength) + "";
+			String key = rString + gString + bString;
+			if (!boxsCenter.containsKey(key)) {
+				boxsCenter.put(key, new ArrayList<int[]>());
+			}
+			boxsCenter.get(key).add(data[random_h][random_w]);
 		}
 		return colors.toArray(new int[K][]);
 	}
@@ -121,6 +152,15 @@ public class KMeans {
 			centers[i][0] = sum_R / data[i].length;
 			centers[i][1] = sum_G / data[i].length;
 			centers[i][2] = sum_B / data[i].length;
+			
+			String rString = (int)(centers[i][0] / boxSideLength) + "";
+			String gString = (int)(centers[i][1] / boxSideLength) + "";
+			String bString = (int)(centers[i][2] / boxSideLength) + "";
+			String key = rString + gString + bString;
+			if (!boxsCenter.containsKey(key)) {
+				boxsCenter.put(key, new ArrayList<int[]>());
+			}
+			boxsCenter.get(key).add(centers[i]);
 		}
 		return centers;
 	}
@@ -132,6 +172,8 @@ public class KMeans {
 	 */
 	private int [][][] getNextGroup(int [][][] data) {	
 		if (data == null) return null;	
+		
+		boxsCenter = new HashMap<>();
 		int [][] colors = getClusterCenter(data);
 		
 		// 若某個群是 null，則隨機指派新的中心點
@@ -152,6 +194,8 @@ public class KMeans {
 	 */
 	private int [][][] getFirstGroup(int [][][] data) {	
 		if (data == null) return null;
+		
+		boxsCenter = new HashMap<>();
 		int [][] colors = getInitialColors(data);
 		
 		return getGroup(data, colors);
@@ -173,7 +217,7 @@ public class KMeans {
 			temp.add(new ArrayList<int[]>());
 		
 		// 開始找尋每個顏色最近的中央點並歸類
-		for (int g = 0, groupCount = data.length; g < groupCount; g++)
+		/*for (int g = 0, groupCount = data.length; g < groupCount; g++)
 			for (int c = 0, colorsCount = data[g].length; c < colorsCount; c++) {
 				int min = Integer.MAX_VALUE;
 				int min_group_idx = -1;
@@ -190,7 +234,55 @@ public class KMeans {
 					}
 				}
 				temp.get(min_group_idx).add(data[g][c]);
+			}*/
+		
+		for (String key : boxsData.keySet()) {
+			ArrayList<int[]> list = boxsData.get(key);
+			for (int[] pointData : list) {
+				int x = key.charAt(0) - '0';
+				int y = key.charAt(1) - '0';
+				int z = key.charAt(2) - '0';
+				
+				int index = 0;
+				int min = Integer.MAX_VALUE;
+				int[] minPoint = new int[3];
+				while(true) {
+					for(int i = index * -1; i < index; i++) {
+						for(int j = index * -1; j < index; j++) {
+							for(int k = index * -1; k < index; k++) {
+								String tx = (x + i) + "";
+								String ty = (y + j) + "";
+								String tz = (z + k) + "";
+								String target = tx + ty + tz;
+								if (boxsCenter.containsKey(target)) {
+									for (int[] pointCenter : boxsCenter.get(target)) {
+										int tmpSum = 0;
+										tmpSum += Math.pow(pointCenter[0] - pointData[0], 2);
+										tmpSum += Math.pow(pointCenter[1] - pointData[1], 2);
+										tmpSum += Math.pow(pointCenter[2] - pointData[2], 2);
+
+										if (tmpSum < min) {
+											min = tmpSum;
+											minPoint = pointCenter;
+										}
+									}
+								}
+							}
+						}
+					}
+					if (min != Integer.MAX_VALUE) {
+						for (int centerId = 0; centerId < K; centerId++){
+							if (center[centerId].equals(minPoint)) {
+								temp.get(centerId).add(pointData);
+								break;
+							}
+						}
+						break;
+					}
+					index++;
+				}
 			}
+		}
 		
 		// 將暫存結構存入儲存結構
 		for (int i = 0; i < K; i++) 
