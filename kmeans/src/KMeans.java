@@ -5,7 +5,7 @@ public class KMeans {
 	// Singleton pettern
 	private static final KMeans kmeans = new KMeans();
 	public static final KMeans getInstance() {return kmeans;}
-	private static int[][] finalColors = null;
+	private int[][] finalColors = null;
 	
 	private double boxSideLength;
 	private Map<String, ArrayList<int[]>> boxsData;

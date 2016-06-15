@@ -143,10 +143,10 @@ public class ImageGui extends JFrame implements MouseMotionListener, MouseListen
 				
 	    		if (k > 0) {
 	    			int[][][] dataDither = KMeans.getInstance().process(data, slider.getValue(), k);
-	    			int[][] finalColor = KMeans.getInstance().getFinalColors();
+
 	    			imagePanel2.paintComponent(g, dataDither);
 	    			colorLabels = new JLabel[k];
-	    			createColorsLabel(finalColor);
+	    			createColorsLabel(KMeans.getInstance().getFinalColors());
 	    			showDitherColor();
 	    			isDithered = true;
 	    		}
@@ -156,6 +156,7 @@ public class ImageGui extends JFrame implements MouseMotionListener, MouseListen
 	
 	private void createColorsLabel(int[][] finalColor) {
 		for (int i = 0; i < finalColor.length; i++) {
+			if (finalColor[i] == null) continue;
 			JLabel label = new JLabel();
 			label.setBackground(new Color(finalColor[i][0], finalColor[i][1], finalColor[i][2]));
 			label.setPreferredSize(new Dimension(20, 20));
@@ -167,7 +168,7 @@ public class ImageGui extends JFrame implements MouseMotionListener, MouseListen
 	
 	private void showDitherColor() {
 		for (int i = 0; i < colorLabels.length; i++) {
-			colorPanel.add(colorLabels[i]);
+			if (colorLabels[i] != null) colorPanel.add(colorLabels[i]);
 		}
 		this.getContentPane().revalidate();
 	}
@@ -186,7 +187,7 @@ public class ImageGui extends JFrame implements MouseMotionListener, MouseListen
 		if (isDithered && e.getX() < width && e.getY() < height) {
 			Color targetColor = imagePanel2.getColorByPoint(e.getX(), e.getY());
 			for (JLabel jLabel : colorLabels) {
-				if (jLabel.getBackground().equals(targetColor)) {
+				if (jLabel!=null && jLabel.getBackground().equals(targetColor)) {
 					nowHighlightLabel = jLabel;
 					jLabel.setBorder(BorderFactory.createLineBorder(Color.RED, 2));
 					nowColor.setBackground(targetColor);
