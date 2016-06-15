@@ -110,14 +110,7 @@ public class KMeans {
 			int random_w = (int) (Math.random() * width);
 			colors.add(data[random_h][random_w]);
 			
-			String rString = (int)(data[random_h][random_w][0] / boxSideLength) + "";
-			String gString = (int)(data[random_h][random_w][1] / boxSideLength) + "";
-			String bString = (int)(data[random_h][random_w][2] / boxSideLength) + "";
-			String key = rString + gString + bString;
-			if (!boxsCenter.containsKey(key)) {
-				boxsCenter.put(key, new ArrayList<int[]>());
-			}
-			boxsCenter.get(key).add(data[random_h][random_w]);
+			putCenterBox(data[random_h][random_w]);
 		}
 		return colors.toArray(new int[K][]);
 	}
@@ -153,14 +146,7 @@ public class KMeans {
 			centers[i][1] = sum_G / data[i].length;
 			centers[i][2] = sum_B / data[i].length;
 			
-			String rString = (int)(centers[i][0] / boxSideLength) + "";
-			String gString = (int)(centers[i][1] / boxSideLength) + "";
-			String bString = (int)(centers[i][2] / boxSideLength) + "";
-			String key = rString + gString + bString;
-			if (!boxsCenter.containsKey(key)) {
-				boxsCenter.put(key, new ArrayList<int[]>());
-			}
-			boxsCenter.get(key).add(centers[i]);
+			putCenterBox(centers[i]);
 		}
 		return centers;
 	}
@@ -293,5 +279,16 @@ public class KMeans {
 	
 	public int[][] getFinalColors() {
 		return finalColors;
+	}
+	
+	public void putCenterBox(int[] pointRGB) {
+		String rString = (int)(pointRGB[0] / boxSideLength) + "";
+		String gString = (int)(pointRGB[1] / boxSideLength) + "";
+		String bString = (int)(pointRGB[2] / boxSideLength) + "";
+		String key = rString + gString + bString;
+		if (!boxsCenter.containsKey(key)) {
+			boxsCenter.put(key, new ArrayList<int[]>());
+		}
+		boxsCenter.get(key).add(pointRGB);
 	}
 }
